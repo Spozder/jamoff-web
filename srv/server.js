@@ -11,12 +11,14 @@ app.use(express.urlencoded({ extended: true }));
 
 app.use(express.static(__dirname + "/../dist"));
 
-app.get("/api/hello", (req, res) => res.send("Hello World!"));
+const API_BASE = "/api";
+
+app.get(API_BASE + "/hello", (req, res) => res.send("Hello World!"));
 
 app.use(
   history({
     index: "/index.html",
-    verbose: true,
+    verbose: true
   })
 );
 
