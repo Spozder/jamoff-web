@@ -4,7 +4,8 @@
       <div class="row row-grid align-items-center my-md">
         <div class="col-lg-6">
           <h3 class="text-primary font-weight-light mb-2">
-            An open source project by<br />
+            An open source project by
+            <br />
             <span>Spencer Pozder.</span>
           </h3>
         </div>
@@ -53,53 +54,11 @@
           <div class="copyright">
             &copy; {{ year }}
             <a
-              href="https://www.creative-tim.com"
+              href="https://spozder.com"
               target="_blank"
               rel="noopener"
-              >Creative Tim</a
-            >
-            &
-            <a href="https://www.binarcode.com" target="_blank" rel="noopener"
-              >Binar Code</a
-            >
+            >Spencer Pozder</a>
           </div>
-        </div>
-        <div class="col-md-6">
-          <ul class="nav nav-footer justify-content-end">
-            <li class="nav-item">
-              <a
-                href="https://www.creative-tim.com"
-                class="nav-link"
-                target="_blank"
-                >Creative Tim</a
-              >
-            </li>
-            <li class="nav-item">
-              <a
-                href="https://www.creative-tim.com/presentation"
-                class="nav-link"
-                target="_blank"
-              >
-                About Us
-              </a>
-            </li>
-            <li class="nav-item">
-              <a
-                href="http://blog.creative-tim.com"
-                class="nav-link"
-                target="_blank"
-                >Blog</a
-              >
-            </li>
-            <li class="nav-item">
-              <a
-                href="https://github.com/creativetimofficial/argon-design-system/blob/master/LICENSE.md"
-                class="nav-link"
-                target="_blank"
-                >MIT License</a
-              >
-            </li>
-          </ul>
         </div>
       </div>
     </div>
