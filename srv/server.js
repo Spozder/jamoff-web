@@ -15,14 +15,15 @@ app.use(express.static(__dirname + "/../dist"));
 
 const API_BASE = "/api";
 
+// TODO: Remove
 app.get(API_BASE + "/hello", (req, res) => res.send("Hello World!"));
-
 app.get(API_BASE + "/test", (req, res) => {
   return eventDriver.getState((err, state) => res.send(state));
 });
 
-app.get(API_BASE + "/profiles", (req, res) => {
-  return eventDriver.getState((err, state) => res.send(state.profiles));
+// TODO: Remove
+app.get(API_BASE + "/identities", (req, res) => {
+  return eventDriver.getState((err, state) => res.send(state.identities));
 });
 
 app.use(API_BASE + "/users", require("./routes/users")(eventDriver));

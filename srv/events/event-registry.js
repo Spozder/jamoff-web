@@ -1,7 +1,12 @@
 const registerUserEvents = require("./user-events");
 const registerGroupEvents = require("./group-events");
+const registerRoundEvents = require("./round-events");
 
-const registerFunctions = [registerUserEvents, registerGroupEvents];
+const registerFunctions = [
+  registerUserEvents,
+  registerGroupEvents,
+  registerRoundEvents
+];
 
 class EventRegistry {
   constructor(types = {}) {
