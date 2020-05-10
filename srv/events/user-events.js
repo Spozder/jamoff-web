@@ -121,6 +121,12 @@ class UserUpdated extends UserEvent {
   }
 }
 
-module.exports = eventRegistry => {
+const registerUserEvents = eventRegistry => {
   return eventRegistry.registerEventTypes([UserCreated, UserUpdated]);
+};
+
+module.exports = {
+  registerUserEvents,
+  UserCreated,
+  UserUpdated
 };

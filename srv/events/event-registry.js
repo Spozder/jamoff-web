@@ -1,6 +1,6 @@
-const registerUserEvents = require("./user-events");
-const registerGroupEvents = require("./group-events");
-const registerRoundEvents = require("./round-events");
+const { registerUserEvents } = require("./user-events");
+const { registerGroupEvents } = require("./group-events");
+const { registerRoundEvents } = require("./round-events");
 
 const registerFunctions = [
   registerUserEvents,

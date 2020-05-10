@@ -5,8 +5,9 @@
   "scripts": {
     "serve": "vue-cli-service serve",
     "build": "vue-cli-service build",
-    "test:unit": "vue-cli-service test:unit",
-    "lint": "vue-cli-service lint"
+    "test:src:unit": "vue-cli-service test:unit",
+    "lint": "vue-cli-service lint",
+    "test:srv:unit": "./node_modules/.bin/mocha \"tests/srv/unit/**/*.spec.js\" || echo"
   },
   "dependencies": {
     "@fortawesome/fontawesome-svg-core": "^1.2.28",
@@ -75,7 +76,8 @@
       {
         "files": [
           "**/__tests__/*.{j,t}s?(x)",
-          "**/tests/unit/**/*.spec.{j,t}s?(x)"
+          "**/tests/srv/unit/**/*.spec.{j,t}s?(x)",
+          "**/tests/src/unit/**/*.spec.{j,t}s?(x)"
         ],
         "env": {
           "mocha": true
