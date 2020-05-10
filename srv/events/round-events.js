@@ -29,8 +29,8 @@ class RoundCreated extends RoundEvent {
         [this.data.roundId]: new Round(
           this.data.roundId,
           this.data.groupId,
-          this.data.startTimestamp,
-          this.data.endTimestamp,
+          new Date(this.data.startTimestamp),
+          new Date(this.data.endTimestamp),
           this.data.theme,
           this.data.description
         )
@@ -42,7 +42,7 @@ class RoundCreated extends RoundEvent {
         )
       }
     };
-    const now = Date.now();
+    const now = new Date(Date.now());
     if (now >= this.data.startTimestamp && now < this.data.endTimestamp) {
       newState = {
         ...newState,
@@ -77,7 +77,7 @@ class RoundUpdated extends RoundEvent {
         )
       }
     };
-    const now = Date.now();
+    const now = new Date(Date.now());
     if (
       now >= newState.rounds[this.data.roundId].startTimestamp &&
       now < newState.rounds[this.data.roundId].endTimestamp
@@ -108,7 +108,7 @@ class RoundActivated extends RoundEvent {
     // Replace the active round
     const updatedGroup = state.groups[groupId].activateRound(this.data.roundId);
     const updatedRound = state.rounds[this.data.roundId].updateRound(
-      Date.now()
+      this.timestamp
     );
 
     let oldActiveRoundId;
@@ -118,7 +118,7 @@ class RoundActivated extends RoundEvent {
       // End the old active round now
       oldActiveRound = state.rounds[oldActiveRoundId].updateRound(
         undefined,
-        Date.now()
+        this.timestamp
       );
     }
     // Combine
@@ -137,10 +137,36 @@ class RoundActivated extends RoundEvent {
   }
 }
 
+class RoundDeactivated extends RoundEvent {
+  static TYPE = super.TYPE + ":ROUND_DEACTIVATED";
+
+  apply(state) {
+    if (!this.data.roundId) {
+      throw "Missing roundId to deactivate";
+    }
+    const groupId = state.rounds[this.data.roundId].groupId;
+    return {
+      ...state,
+      groups: {
+        ...state.groups,
+        [groupId]: state.groups[groupId].deactivateRound(this.data.roundId)
+      },
+      rounds: {
+        ...state.rounds,
+        [this.data.roundId]: state.rounds[this.data.roundId].updateRound(
+          undefined,
+          this.timestamp
+        )
+      }
+    };
+  }
+}
+
 module.exports = eventRegistry => {
   return eventRegistry.registerEventTypes([
     RoundCreated,
     RoundUpdated,
-    RoundActivated
+    RoundActivated,
+    RoundDeactivated
   ]);
 };

@@ -28,6 +28,7 @@ app.get(API_BASE + "/identities", (req, res) => {
 
 app.use(API_BASE + "/users", require("./routes/users")(eventDriver));
 app.use(API_BASE + "/groups", require("./routes/groups")(eventDriver));
+app.use(API_BASE + "/rounds", require("./routes/rounds")(eventDriver));
 
 app.use(
   history({

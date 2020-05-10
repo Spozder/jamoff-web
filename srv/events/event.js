@@ -1,7 +1,7 @@
 class Event {
   static TYPE = "EVENT";
 
-  constructor(timestamp = Date.now(), data) {
+  constructor(timestamp = new Date(Date.now()), data) {
     this.timestamp = timestamp;
     this.data = data;
   }
