@@ -162,19 +162,18 @@ class RoundDeactivated extends RoundEvent {
   }
 }
 
-const registerRoundEvents = eventRegistry => {
-  return eventRegistry.registerEventTypes([
-    RoundCreated,
-    RoundUpdated,
-    RoundActivated,
-    RoundDeactivated
-  ]);
-};
-
-module.exports = {
-  registerRoundEvents,
+const eventTypes = {
   RoundCreated,
   RoundUpdated,
   RoundActivated,
   RoundDeactivated
+};
+
+const registerRoundEvents = eventRegistry => {
+  return eventRegistry.registerEventTypes(Object.values(eventTypes));
+};
+
+module.exports = {
+  ...eventTypes,
+  registerRoundEvents
 };

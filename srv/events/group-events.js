@@ -139,19 +139,18 @@ class GroupMemberRemoved extends GroupEvent {
   }
 }
 
-const registerGroupEvents = eventRegistry => {
-  return eventRegistry.registerEventTypes([
-    GroupCreated,
-    GroupUpdated,
-    GroupMemberAdded,
-    GroupMemberRemoved
-  ]);
-};
-
-module.exports = {
-  registerGroupEvents,
+const eventTypes = {
   GroupCreated,
   GroupUpdated,
   GroupMemberAdded,
   GroupMemberRemoved
+};
+
+const registerGroupEvents = eventRegistry => {
+  return eventRegistry.registerEventTypes(Object.values(eventTypes));
+};
+
+module.exports = {
+  ...eventTypes,
+  registerGroupEvents
 };
