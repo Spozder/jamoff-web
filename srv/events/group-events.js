@@ -26,6 +26,12 @@ class GroupCreated extends GroupEvent {
           this.data.ownerId,
           this.data.description
         )
+      },
+      profiles: {
+        ...state.profiles,
+        [this.data.ownerId]: state.profiles[
+          this.data.ownerId
+        ].addGroupOwnership(this.data.id)
       }
     };
   }
@@ -42,15 +48,38 @@ class GroupUpdated extends GroupEvent {
     } else if (this.data.ownerId && !(this.data.ownerId in state.profiles)) {
       throw "Invalid New Group Owner ID";
     }
+    const updatedGroup = state.groups[this.data.id].updateGroup(
+      this.data.name,
+      this.data.ownerId,
+      this.data.description
+    );
+    if (this.data.ownerId) {
+      // Gotta do more stuff when changing the owner of a group
+      const oldOwnerId = state.groups[this.data.id].ownerId;
+      const oldOwnerUpdatedProfile = state.profiles[
+        oldOwnerId
+      ].removeGroupOwnership(this.data.id);
+      const newOwnerUpdatedProfile = state.profiles[
+        this.data.ownerId
+      ].addGroupOwnership(this.data.id);
+      return {
+        ...state,
+        groups: {
+          ...state.groups,
+          [this.data.id]: updatedGroup
+        },
+        profiles: {
+          ...state.profiles,
+          [this.data.ownerId]: newOwnerUpdatedProfile,
+          [oldOwnerId]: oldOwnerUpdatedProfile
+        }
+      };
+    }
     return {
       ...state,
       groups: {
         ...state.groups,
-        [this.data.id]: state.groups[this.data.id].updateGroup(
-          this.data.name,
-          this.data.ownerId,
-          this.data.description
-        )
+        [this.data.id]: updatedGroup
       }
     };
   }
