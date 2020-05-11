@@ -58,4 +58,12 @@ class State {
   };
 }
 
-module.exports = { State, Profile, Identity, Group, Round };
+const StateUtils = {
+  getIdentityForEmail: (state, email) => {
+    return Object.values(state.identities).find(
+      identity => identity.email === email
+    );
+  }
+};
+
+module.exports = { State, StateUtils, Profile, Identity, Group, Round };
