@@ -57,7 +57,8 @@ passport.use(
 
 passport.use(
   new BearerStrategy((token, done) => {
-    const decodedId = jwt.decode(token, JWT_SECRET);
+    const decodedObject = jwt.decode(token, JWT_SECRET);
+    const { id: decodedId } = decodedObject;
 
     return eventDriver.getState((err, state) => {
       return done(err, state.profiles[decodedId]);
@@ -84,9 +85,10 @@ app.post(
 
 app.post(API_BASE + "/login", passport.authenticate("local"), (req, res) => {
   console.log("Authenticated API user: ", req.user);
+  const jwtObject = { time: new Date(Date.now()), id: req.user.userId };
   res.send({
     userId: req.user.userId,
-    accessToken: jwt.encode(req.user.userId, JWT_SECRET)
+    accessToken: jwt.encode(jwtObject, JWT_SECRET)
   });
 });
 
