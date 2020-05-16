@@ -33,6 +33,7 @@ passport.serializeUser((user, done) => {
 });
 
 passport.deserializeUser((id, done) => {
+  console.log("Deserializing userId: ", id);
   eventDriver.getState((err, state) => {
     done(err, state.profiles[id]);
   });
@@ -71,18 +72,18 @@ const ensureAuthenticated = (req, res, next) => {
     return next();
   }
 
-  res.sendStatus(403);
+  return res.sendStatus(403);
 };
 
 app.post(
   "/login",
-  passport.authenticate("local", { failureRedirect: "/login" }),
+  passport.authenticate("local", { failureRedirect: "/login?failure=true" }),
   (req, res) => {
-    console.log("Authenticated user: ", req.user);
-    res.redirect("/");
+    return res.redirect("/?loggedIn=true");
   }
 );
 
+// TODO: Change to local-api that uses json body, not form submission
 app.post(API_BASE + "/login", passport.authenticate("local"), (req, res) => {
   console.log("Authenticated API user: ", req.user);
   const jwtObject = { time: new Date(Date.now()), id: req.user.userId };
@@ -117,9 +118,12 @@ app.use(express.static(__dirname + "/../dist"));
 app.use(
   history({
     index: "/index.html",
-    verbose: true
+    verbose: true,
+    disableDotRule: true
   })
 );
+
+app.use(express.static(__dirname + "/../dist"));
 
 // listen on the port
 console.log("Starting express app!");

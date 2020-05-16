@@ -40,26 +40,28 @@
               <div class="text-center text-muted mb-4">
                 <small>Or sign in with credentials</small>
               </div>
-              <form role="form">
+              <form role="form" method="post" action="/login">
                 <base-input
                   alternative
                   class="mb-3"
                   placeholder="Email"
                   addon-left-icon="ni ni-email-83"
-                >
-                </base-input>
+                  v-model="email"
+                  for="email"
+                  name="username"
+                ></base-input>
                 <base-input
                   alternative
                   type="password"
                   placeholder="Password"
                   addon-left-icon="ni ni-lock-circle-open"
-                >
-                </base-input>
-                <base-checkbox>
-                  Remember me
-                </base-checkbox>
+                  v-model="password"
+                  for="password"
+                  name="password"
+                ></base-input>
+                <base-checkbox>Remember me</base-checkbox>
                 <div class="text-center">
-                  <base-button type="primary" class="my-4">Sign In</base-button>
+                  <base-button type="primary" class="my-4" nativeType="submit">Sign In</base-button>
                 </div>
               </form>
             </template>
@@ -82,6 +84,11 @@
   </section>
 </template>
 <script>
-export default {};
+export default {
+  data: () => ({
+    email: null,
+    password: null
+  })
+};
 </script>
 <style></style>

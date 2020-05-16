@@ -7,10 +7,7 @@
     :class="classes"
     :to="to"
   >
-    <span
-      class="btn-inner--icon"
-      v-if="$slots.icon || ((icon || faIcon) && $slots.default)"
-    >
+    <span class="btn-inner--icon" v-if="$slots.icon || ((icon || faIcon) && $slots.default)">
       <slot name="icon">
         <i :class="icon" v-if="icon"></i>
         <font-awesome-icon :icon="faIcon" v-if="faIcon"></font-awesome-icon>
@@ -23,9 +20,7 @@
       "
       v-if="$slots.icon || (icon && $slots.default)"
     >
-      <slot>
-        {{ text }}
-      </slot>
+      <slot>{{ text }}</slot>
     </span>
     <slot v-if="!$slots.icon && !icon"></slot>
   </component>
