@@ -16,30 +16,51 @@
         </div>
       </div>
 
-      <ul class="navbar-nav navbar-nav-hover align-items-lg-center">
-        <li class="nav-item">
-          <a href="#" class="nav-link" data-toggle="dropdown" role="button">
-            <i class="ni ni-fat-add" style="margin-right: 0px"></i>
-            <span class="nav-link-inner--text">Start A New JamOff</span>
-          </a>
-        </li>
-        <li class="nav-item">
-          <a href="#" class="nav-link" data-toggle="dropdown" role="button">
-            <i class="ni ni-trophy" style="margin-right: 0px"></i>
-            <span class="nav-link-inner--text">Join An Existing JamOff</span>
-          </a>
-        </li>
-      </ul>
-      <div class="navbar-nav align-items-lg-center ml-lg-auto">
-        <base-button
-          tag="router-link"
-          to="/login"
-          class="mb-3 mb-sm-0"
-          type="neutral"
-          icon="ni ni-single-02 mr-2"
+      <div
+        class="navbar-nav"
+        style="display: flex; justify-content: space-between; width: 100%"
+        slot-scope="{ closeMenu }"
+      >
+        <ul class="navbar-nav navbar-nav-hover align-items-lg-center">
+          <li class="nav-item">
+            <a
+              href="#"
+              class="nav-link"
+              data-toggle="dropdown"
+              role="button"
+              @click="closeMenu"
+            >
+              <i class="ni ni-fat-add" style="margin-right: 0px"></i>
+              <span class="nav-link-inner--text">Start A New JamOff</span>
+            </a>
+          </li>
+          <li class="nav-item">
+            <a
+              href="#"
+              class="nav-link"
+              data-toggle="dropdown"
+              role="button"
+              @click="closeMenu"
+            >
+              <i class="ni ni-trophy" style="margin-right: 0px"></i>
+              <span class="nav-link-inner--text">Join An Existing JamOff</span>
+            </a>
+          </li>
+        </ul>
+        <div
+          class="navbar-nav align-items-lg-center ml-lg-auto"
+          @click="closeMenu"
         >
-          Login
-        </base-button>
+          <base-button
+            tag="router-link"
+            to="/login"
+            class="mb-3 mb-sm-0"
+            type="neutral"
+            icon="ni ni-single-02 mr-2"
+          >
+            Login
+          </base-button>
+        </div>
       </div>
     </base-nav>
   </header>

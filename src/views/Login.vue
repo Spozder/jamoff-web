@@ -61,7 +61,9 @@
                 ></base-input>
                 <base-checkbox>Remember me</base-checkbox>
                 <div class="text-center">
-                  <base-button type="primary" class="my-4" nativeType="submit">Sign In</base-button>
+                  <base-button type="primary" class="my-4" nativeType="submit"
+                    >Sign In</base-button
+                  >
                 </div>
               </form>
             </template>
