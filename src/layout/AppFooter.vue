@@ -53,11 +53,9 @@
         <div class="col-md-6">
           <div class="copyright">
             &copy; {{ year }}
-            <a
-              href="https://spozder.com"
-              target="_blank"
-              rel="noopener"
-            >Spencer Pozder</a>
+            <a href="https://spozder.com" target="_blank" rel="noopener"
+              >Spencer Pozder</a
+            >
           </div>
         </div>
       </div>

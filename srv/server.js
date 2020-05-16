@@ -100,15 +100,28 @@ const ensureAuthenticated = (req, res, next) => {
   return res.sendStatus(403);
 };
 
+app.get(
+  API_BASE + "/checkAuth",
+  passport.authenticate(["bearer", "session"]),
+  (req, res) => {
+    if (!req.isAuthenticated()) {
+      return res.send({ isAuthenticated: false });
+    }
+    return res.send({
+      isAuthenticated: true,
+      userId: req.user.userId
+    });
+  }
+);
+
 app.post(
   "/login",
   passport.authenticate("local", { failureRedirect: "/login?failure=true" }),
   (req, res) => {
-    return res.redirect("/?loggedIn=true");
+    return res.redirect("/me?loggedIn=true");
   }
 );
 
-// TODO: Change to local-api that uses json body, not form submission
 app.post(
   API_BASE + "/login",
   passport.authenticate("json-body"),
@@ -121,6 +134,16 @@ app.post(
     });
   }
 );
+
+app.get("/logout", (req, res) => {
+  req.logout();
+  res.redirect("/?logout=true");
+});
+
+app.get(API_BASE + "/logout", (req, res) => {
+  req.logout();
+  res.send({ message: "Logout successful" });
+});
 
 // TODO: Remove
 app.get(API_BASE + "/hello", (req, res) => res.send("Hello World!"));
@@ -137,7 +160,7 @@ app.use(API_BASE + "/users", require("./routes/users")(eventDriver));
 app.use(API_BASE + "/groups", require("./routes/groups")(eventDriver));
 app.use(API_BASE + "/rounds", require("./routes/rounds")(eventDriver));
 app.use(API_BASE + "/me", [
-  passport.authenticate(["session", "bearer"], { session: false }),
+  passport.authenticate(["bearer", "session"], { session: false }),
   ensureAuthenticated,
   require("./routes/me")(eventDriver)
 ]);

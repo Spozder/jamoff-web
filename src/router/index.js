@@ -38,12 +38,26 @@ const routes = [
     }
   },
   {
-    path: "/profile",
+    path: "/me",
+    name: "my profile",
+    components: {
+      header: Header,
+      default: Profile,
+      footer: Footer
+    }
+  },
+  {
+    path: "/profile/:id",
     name: "profile",
     components: {
       header: Header,
       default: Profile,
       footer: Footer
+    },
+    props: {
+      header: false,
+      default: true,
+      footer: false
     }
   }
 ];

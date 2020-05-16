@@ -20,7 +20,7 @@
                 <div class="card-profile-image">
                   <a href="#">
                     <img
-                      v-lazy="'img/theme/team-4-800x800.jpg'"
+                      v-lazy="'/img/theme/team-4-800x800.jpg'"
                       class="rounded-circle"
                     />
                   </a>
@@ -93,6 +93,8 @@
   </div>
 </template>
 <script>
-export default {};
+export default {
+  props: ["id"]
+};
 </script>
 <style></style>
