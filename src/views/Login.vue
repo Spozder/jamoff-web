@@ -21,6 +21,12 @@
             class="border-0"
           >
             <template>
+              <div
+                class="text-warning text-center mb-3"
+                v-if="this.$route.query && this.$route.query.failure"
+              >
+                <small>Error - Sign in Failed</small>
+              </div>
               <div class="text-muted text-center mb-3">
                 <small>Sign in with</small>
               </div>
@@ -59,7 +65,9 @@
                   for="password"
                   name="password"
                 ></base-input>
-                <base-checkbox>Remember me</base-checkbox>
+                <base-checkbox
+                  >Remember me (currently doesn't work)</base-checkbox
+                >
                 <div class="text-center">
                   <base-button type="primary" class="my-4" nativeType="submit"
                     >Sign In</base-button
