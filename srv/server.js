@@ -5,6 +5,7 @@ const cors = require("cors");
 const passport = require("passport");
 const LocalStrategy = require("passport-local").Strategy;
 const BearerStrategy = require("passport-http-bearer").Strategy;
+const CustomStrategy = require("passport-custom").Strategy;
 const { ensureLoggedIn } = require("connect-ensure-login");
 const jwt = require("jwt-simple");
 
@@ -67,6 +68,30 @@ passport.use(
   })
 );
 
+passport.use(
+  "json-body",
+  new CustomStrategy((req, done) => {
+    if (!req.body || !req.body.email || !req.body.password) {
+      return done(null, false, { message: "Invalid login request body" });
+    }
+    const email = req.body.email;
+    const passHash = req.body.password;
+    eventDriver.getState((err, state) => {
+      if (err) {
+        return done(err);
+      }
+
+      const identity = StateUtils.getIdentityForEmail(state, email);
+      if (!identity) {
+        return done(null, false, { message: "Email not found" });
+      } else if (identity.passHash !== passHash) {
+        return done(null, false, { message: "Incorrect password" });
+      }
+      return done(null, state.profiles[identity.userId]);
+    });
+  })
+);
+
 const ensureAuthenticated = (req, res, next) => {
   if (req.isAuthenticated()) {
     return next();
@@ -84,14 +109,18 @@ app.post(
 );
 
 // TODO: Change to local-api that uses json body, not form submission
-app.post(API_BASE + "/login", passport.authenticate("local"), (req, res) => {
-  console.log("Authenticated API user: ", req.user);
-  const jwtObject = { time: new Date(Date.now()), id: req.user.userId };
-  res.send({
-    userId: req.user.userId,
-    accessToken: jwt.encode(jwtObject, JWT_SECRET)
-  });
-});
+app.post(
+  API_BASE + "/login",
+  passport.authenticate("json-body"),
+  (req, res) => {
+    console.log("Authenticated API user: ", req.user);
+    const jwtObject = { time: new Date(Date.now()), id: req.user.userId };
+    res.send({
+      userId: req.user.userId,
+      accessToken: jwt.encode(jwtObject, JWT_SECRET)
+    });
+  }
+);
 
 // TODO: Remove
 app.get(API_BASE + "/hello", (req, res) => res.send("Hello World!"));
