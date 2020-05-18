@@ -2,6 +2,7 @@
 
 const express = require("express");
 const router = express.Router();
+const { StateUtils } = require("../state");
 
 module.exports = eventDriver => {
   router.get("/", (req, res) => {
@@ -10,7 +11,7 @@ module.exports = eventDriver => {
         console.log("UH OH", err);
         return res.sendStatus(500);
       }
-      return res.send(state.profiles[req.user.userId]);
+      return res.send(StateUtils.getDisplayProfile(state, req.user.userId));
     });
   });
 

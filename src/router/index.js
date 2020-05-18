@@ -6,8 +6,24 @@ import Home from "../views/Home.vue";
 import Login from "../views/Login.vue";
 import Register from "../views/Register.vue";
 import Profile from "../views/Profile.vue";
+import { store, CHECK_AUTH } from "../store";
 
 Vue.use(VueRouter);
+
+const authGuard = async (to, from, next) => {
+  if (store.state.isAuthenticated) {
+    console.log("Authorized!");
+    return next();
+  }
+  await store.dispatch(CHECK_AUTH);
+  if (store.state.isAuthenticated) {
+    console.log("Authorized after check!");
+    return next();
+  } else {
+    console.log("Still not authorized after check");
+    return next("/?failure=true");
+  }
+};
 
 const routes = [
   {
@@ -44,7 +60,8 @@ const routes = [
       header: Header,
       default: Profile,
       footer: Footer
-    }
+    },
+    beforeEnter: authGuard
   },
   {
     path: "/profile/:id",

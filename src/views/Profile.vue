@@ -41,36 +41,30 @@
               <div class="col-lg-4 order-lg-1">
                 <div class="card-profile-stats d-flex justify-content-center">
                   <div>
-                    <span class="heading">22</span>
-                    <span class="description">Friends</span>
+                    <span class="heading">{{
+                      profile.memberOfGroups.length
+                    }}</span>
+                    <span class="description"
+                      >Group{{
+                        profile.memberOfGroups.length > 1 ? "s" : ""
+                      }}</span
+                    >
                   </div>
                   <div>
                     <span class="heading">10</span>
-                    <span class="description">Photos</span>
+                    <span class="description">Song Submissions</span>
                   </div>
                   <div>
                     <span class="heading">89</span>
-                    <span class="description">Comments</span>
+                    <span class="description">Votes</span>
                   </div>
                 </div>
               </div>
             </div>
             <div class="text-center mt-5">
               <h3>
-                Jessica Jones
-                <span class="font-weight-light">, 27</span>
+                {{ profile.fullName }}
               </h3>
-              <div class="h6 font-weight-300">
-                <i class="ni location_pin mr-2"></i>Bucharest, Romania
-              </div>
-              <div class="h6 mt-4">
-                <i class="ni business_briefcase-24 mr-2"></i>Solution Manager -
-                Creative Tim Officer
-              </div>
-              <div>
-                <i class="ni education_hat mr-2"></i>University of Computer
-                Science
-              </div>
             </div>
             <div class="mt-5 py-5 border-top text-center">
               <div class="row justify-content-center">
@@ -93,8 +87,19 @@
   </div>
 </template>
 <script>
+import { GET_PROFILE_BY_ID } from "../store";
 export default {
-  props: ["id"]
+  props: {
+    id: String
+  },
+  computed: {
+    profile: function() {
+      return this.$store.state.profilePageData;
+    }
+  },
+  created: function() {
+    this.$store.dispatch(GET_PROFILE_BY_ID, this.id);
+  }
 };
 </script>
 <style></style>

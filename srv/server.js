@@ -164,6 +164,7 @@ app.use(API_BASE + "/me", [
   ensureAuthenticated,
   require("./routes/me")(eventDriver)
 ]);
+app.use(API_BASE + "/profiles", require("./routes/profiles")(eventDriver));
 
 app.use(express.static(__dirname + "/../dist"));
 

@@ -52,14 +52,23 @@
           @click="closeMenu"
         >
           <base-button
+            v-if="!isAuthenticated"
             tag="router-link"
             to="/login"
             class="mb-3 mb-sm-0"
             type="neutral"
             icon="ni ni-single-02 mr-2"
+            >Login</base-button
           >
-            Login
-          </base-button>
+          <base-button
+            v-if="isAuthenticated"
+            tag="a"
+            href="/logout"
+            class="mb-3 mb-sm-0"
+            type="neutral"
+            icon="ni ni-single-02 mr-2"
+            >Logout</base-button
+          >
         </div>
       </div>
     </base-nav>
@@ -68,11 +77,15 @@
 <script>
 import BaseNav from "@/components/BaseNav";
 import CloseButton from "@/components/CloseButton";
+import { mapGetters } from "vuex";
 
 export default {
   components: {
     BaseNav,
     CloseButton
+  },
+  computed: {
+    ...mapGetters(["isAuthenticated"])
   }
 };
 </script>

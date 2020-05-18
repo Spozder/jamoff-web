@@ -22,10 +22,7 @@ class Round {
     this.songList = songList;
   }
 
-  addSong(spotifyTrackUri) {
-    if (!spotifyTrackUri.startsWith("spotify:track:")) {
-      throw "Tried to add something that is not a Spotify Track URI to the round";
-    }
+  addSong(submissionId) {
     return new Round(
       this.roundId,
       this.groupId,
@@ -33,7 +30,19 @@ class Round {
       this.endTimestamp,
       this.theme,
       this.description,
-      [...this.songList, spotifyTrackUri]
+      [...this.songList, submissionId]
+    );
+  }
+
+  removeSong(submissionId) {
+    return new Round(
+      this.roundId,
+      this.groupId,
+      this.startTimestamp,
+      this.endTimestamp,
+      this.theme,
+      this.description,
+      this.songList.filter(id => id !== submissionId)
     );
   }
 
@@ -47,6 +56,24 @@ class Round {
       description || this.description,
       this.songList
     );
+  }
+
+  // Getters
+  getSubmittedUserIds(state) {
+    return this.songList.map(
+      submissionId => state.songSubmissions[submissionId].submittedByUserId
+    );
+  }
+
+  // Display methods
+  toBasicDisplayRound() {
+    return {
+      started: this.startTimestamp,
+      ends: this.endTimestamp,
+      theme: this.theme,
+      description: this.description,
+      submissionCound: this.songList.length
+    };
   }
 }
 

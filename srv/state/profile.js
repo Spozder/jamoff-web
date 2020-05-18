@@ -101,6 +101,15 @@ class Profile {
       this.memberOfGroups.filter(memberOfId => memberOfId !== groupId)
     );
   }
+
+  // Display methods
+  toBasicDisplayProfile() {
+    return {
+      fullName: this.fullName,
+      ownerOfCount: this.ownerOfGroups.length,
+      memberSince: this.createdOn
+    };
+  }
 }
 
 module.exports = { Profile };
