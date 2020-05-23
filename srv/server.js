@@ -24,6 +24,8 @@ app.use(session({ secret: "UhhhhIdk" })); // TODO CHANGE
 app.use(passport.initialize());
 app.use(passport.session());
 
+const { checkPassword } = require("./utils");
+
 const API_BASE = "/api";
 
 // Login Stuff
@@ -47,10 +49,14 @@ passport.use(
       const identity = state.findIdentityByEmail(email);
       if (!identity) {
         return done(null, false, { message: "Email not found" });
-      } else if (identity.passHash !== password) {
-        return done(null, false, { message: "Incorrect password" });
+      } else {
+        return checkPassword(password, identity.passHash, (err, result) => {
+          if (!result) {
+            return done(null, false, { message: "Incorrect password" });
+          }
+          return done(null, state.profiles[identity.userId]);
+        });
       }
-      return done(null, state.profiles[identity.userId]);
     });
   })
 );
@@ -73,7 +79,6 @@ passport.use(
       return done(null, false, { message: "Invalid login request body" });
     }
     const email = req.body.email;
-    const passHash = req.body.password;
     eventDriver.getReadState((err, state) => {
       if (err) {
         return done(err);
@@ -82,10 +87,18 @@ passport.use(
       const identity = state.findIdentityByEmail(email);
       if (!identity) {
         return done(null, false, { message: "Email not found" });
-      } else if (identity.passHash !== passHash) {
-        return done(null, false, { message: "Incorrect password" });
+      } else {
+        return checkPassword(
+          req.body.password,
+          identity.passHash,
+          (err, result) => {
+            if (!result) {
+              return done(null, false, { message: "Incorrect password" });
+            }
+            return done(null, state.profiles[identity.userId]);
+          }
+        );
       }
-      return done(null, state.profiles[identity.userId]);
     });
   })
 );
