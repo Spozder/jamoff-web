@@ -79,16 +79,18 @@ class ReadState {
     this.songSubmissions = state.songSubmissions;
   }
 
+  // NOTE: Getters must be shallow (only 1 level deep)
+  // Any more risks cyclic data being sent - toJSON would then fail
   GETTERS = {
     getIdentityById: identityId => this.identities[identityId],
     getProfileById: profileId => this.profiles[profileId],
-    getGroupsById: groupId => this.groups[groupId],
+    getGroupById: groupId => this.groups[groupId],
     getRoundById: roundId => this.rounds[roundId],
     getSongSubmissionById: songSubmissionId =>
       this.songSubmissions[songSubmissionId],
     getSongSubmissionsByUserId: userId => {
-      return this.songSubmissions.filter(
-        submission => submission.submittedById === userId
+      return Object.values(this.songSubmissions).filter(
+        submission => submission.submittedByUserId === userId
       );
     }
   };

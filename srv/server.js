@@ -6,7 +6,6 @@ const passport = require("passport");
 const LocalStrategy = require("passport-local").Strategy;
 const BearerStrategy = require("passport-http-bearer").Strategy;
 const CustomStrategy = require("passport-custom").Strategy;
-const { ensureLoggedIn } = require("connect-ensure-login");
 const jwt = require("jwt-simple");
 
 // TODO CHANGE
@@ -17,7 +16,6 @@ const port = 3000;
 const history = require("connect-history-api-fallback");
 
 const eventDriver = require("./events/event-driver");
-const { StateUtils } = require("./state");
 
 app.use(bodyParser.json());
 app.use(cors());
@@ -35,18 +33,18 @@ passport.serializeUser((user, done) => {
 
 passport.deserializeUser((id, done) => {
   console.log("Deserializing userId: ", id);
-  eventDriver.getState((err, state) => {
+  eventDriver.getReadState((err, state) => {
     done(err, state.profiles[id]);
   });
 });
 
 passport.use(
   new LocalStrategy((email, password, done) => {
-    eventDriver.getState((err, state) => {
+    eventDriver.getReadState((err, state) => {
       if (err) {
         return done(err);
       }
-      const identity = StateUtils.getIdentityForEmail(state, email);
+      const identity = state.findIdentityByEmail(email);
       if (!identity) {
         return done(null, false, { message: "Email not found" });
       } else if (identity.passHash !== password) {
@@ -62,7 +60,7 @@ passport.use(
     const decodedObject = jwt.decode(token, JWT_SECRET);
     const { id: decodedId } = decodedObject;
 
-    return eventDriver.getState((err, state) => {
+    return eventDriver.getReadState((err, state) => {
       return done(err, state.profiles[decodedId]);
     });
   })
@@ -76,12 +74,12 @@ passport.use(
     }
     const email = req.body.email;
     const passHash = req.body.password;
-    eventDriver.getState((err, state) => {
+    eventDriver.getReadState((err, state) => {
       if (err) {
         return done(err);
       }
 
-      const identity = StateUtils.getIdentityForEmail(state, email);
+      const identity = state.findIdentityByEmail(email);
       if (!identity) {
         return done(null, false, { message: "Email not found" });
       } else if (identity.passHash !== passHash) {
@@ -148,12 +146,12 @@ app.get(API_BASE + "/logout", (req, res) => {
 // TODO: Remove
 app.get(API_BASE + "/hello", (req, res) => res.send("Hello World!"));
 app.get(API_BASE + "/test", (req, res) => {
-  return eventDriver.getState((err, state) => res.send(state));
+  return eventDriver.getReadState((err, state) => res.send(state));
 });
 
 // TODO: Remove
 app.get(API_BASE + "/identities", (req, res) => {
-  return eventDriver.getState((err, state) => res.send(state.identities));
+  return eventDriver.getReadState((err, state) => res.send(state.identities));
 });
 
 app.use(API_BASE + "/users", require("./routes/users")(eventDriver));
