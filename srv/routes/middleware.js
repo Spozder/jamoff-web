@@ -1,6 +1,14 @@
 const { EventValidationError } = require("../errors");
 
 module.exports = eventDriver => {
+  const ensureAuthenticated = (req, res, next) => {
+    if (req.isAuthenticated()) {
+      return next();
+    }
+
+    return res.sendStatus(403);
+  };
+
   const getsReadState = (req, res, next) => {
     return eventDriver.getReadState((err, readState) => {
       if (err) {
@@ -30,5 +38,5 @@ module.exports = eventDriver => {
     return callback();
   };
 
-  return { getsReadState, handleAppendEventError };
+  return { getsReadState, handleAppendEventError, ensureAuthenticated };
 };

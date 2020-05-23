@@ -90,13 +90,7 @@ passport.use(
   })
 );
 
-const ensureAuthenticated = (req, res, next) => {
-  if (req.isAuthenticated()) {
-    return next();
-  }
-
-  return res.sendStatus(403);
-};
+const { ensureAuthenticated } = require("./routes/middleware")(eventDriver);
 
 app.get(
   API_BASE + "/checkAuth",
