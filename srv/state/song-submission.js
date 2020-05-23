@@ -1,10 +1,13 @@
-class SongSubmission {
+const { ModelBase } = require("./model-base");
+
+class SongSubmission extends ModelBase {
   constructor(
     songSubmissionId,
     submittedByUserId,
     submissionTimestamp,
     roundId
   ) {
+    super();
     this.songSubmissionId = songSubmissionId;
     this.submittedByUserId = submittedByUserId;
     this.submissionTimestamp = submissionTimestamp;
@@ -27,6 +30,28 @@ class SpotifySubmission extends SongSubmission {
     }
     this.spotifyURI = spotifyURI;
     this.songMetaData = songMetaData;
+  }
+
+  basicDisplay() {
+    return {
+      songSubmissionId: this.songSubmissionId,
+      submissionTimestamp: this.submissionTimestamp,
+      type: "spotify",
+      spotifyURI: this.spotifyURI,
+      songMetaData: this.songMetaData
+    };
+  }
+
+  extendedDisplay({ getProfileById, getRoundById }) {
+    return {
+      songSubmissionId: this.songSubmissionId,
+      submittedBy: getProfileById(this.submittedByUserId).basicDisplay(),
+      submissionTimestamp: this.submissionTimestamp,
+      round: getRoundById(this.roundId).basicDisplay(),
+      type: "spotify",
+      spotifyURI: this.spotifyURI,
+      songMetaData: this.songMetaData
+    };
   }
 }
 

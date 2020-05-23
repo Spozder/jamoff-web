@@ -1,4 +1,6 @@
-class Group {
+const { ModelBase } = require("./model-base");
+
+class Group extends ModelBase {
   constructor(
     groupId,
     name,
@@ -8,6 +10,7 @@ class Group {
     roundIds = [],
     activeRoundId
   ) {
+    super();
     if (!groupId || !name || !ownerId) {
       throw "Missing required Group field";
     }
@@ -136,6 +139,33 @@ class Group {
       this.roundIds,
       undefined
     );
+  }
+
+  // Display methods
+  basicDisplay() {
+    return {
+      groupId: this.groupId,
+      name: this.name,
+      description: this.description,
+      memberCount: this.memberIds.length,
+      roundcount: this.roundIds.length
+    };
+  }
+
+  extendedDisplay({ getProfileById, getRoundById }) {
+    return {
+      groupId: this.groupId,
+      name: this.name,
+      description: this.description,
+      owner: getProfileById(this.ownerId).basicDisplay(),
+      members: this.memberIds
+        .map(getProfileById)
+        .map(profile => profile.basicDisplay()),
+      rounds: this.roundIds
+        .map(getRoundById)
+        .map(round => round.basicDisplay()),
+      activeRound: getRoundById(this.activeRoundId)
+    };
   }
 }
 

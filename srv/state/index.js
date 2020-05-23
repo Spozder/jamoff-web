@@ -2,7 +2,7 @@ const { Profile } = require("./profile");
 const { Identity } = require("./identity");
 const { Group } = require("./group");
 const { Round } = require("./round");
-const { SongSubmission, SpotifySubmission } = require("./songSubmission");
+const { SongSubmission, SpotifySubmission } = require("./song-submission");
 
 // Data Definition for STATE
 // Regular JS Object - Initialized with State.INIT
@@ -70,52 +70,117 @@ class State {
   };
 }
 
-const StateUtils = {
-  getIdentityForEmail: (state, email) => {
-    return Object.values(state.identities).find(
-      identity => identity.email === email
-    );
-  },
-  getBasicProfile: (state, userId) =>
-    state.profiles[userId].toBasicDisplayProfile(),
-  getBasicRound: (state, roundId) =>
-    state.rounds[roundId].toBasicDisplayRound(),
-  getDisplayGroup: (state, groupId) => {
-    return {
-      name: state.groups[groupId].name,
-      description: state.groups[groupId].description,
-      owner: StateUtils.getBasicProfile(state, state.groups[groupId].ownerId),
-      memberCount: state.groups[groupId].memberIds.length,
-      activeRound: StateUtils.getBasicRound(
-        state,
-        state.groups[groupId].activeRoundId
-      )
-    };
-  },
-  getDisplayProfile: (state, userId) => {
-    return {
-      fullName: state.profiles[userId].fullName,
-      groups: state.profiles[userId].ownerOfGroups.reduce(
-        (acc, groupId) => ({
-          ...acc,
-          groupId: StateUtils.getDisplayGroup(state, groupId)
-        }),
-        {}
-      ),
-      // Consider changing up profile to include sumbission ids???
-      songSubmissions: Object.keys(state.songSubmissions)
-        .filter(
-          submissionId =>
-            state.songSubmissions[submissionId].submittedByUserId === userId
-        )
-        .map(submissionId => state.songSubmissions[submissionId])
-    };
+class ReadState {
+  constructor(state) {
+    this.identities = state.identities;
+    this.profiles = state.profiles;
+    this.groups = state.groups;
+    this.rounds = state.rounds;
+    this.songSubmissions = state.songSubmissions;
   }
-};
+
+  GETTERS = {
+    getIdentityById: identityId => this.identities[identityId],
+    getProfileById: profileId => this.profiles[profileId],
+    getGroupsById: groupId => this.groups[groupId],
+    getRoundById: roundId => this.rounds[roundId],
+    getSongSubmissionById: songSubmissionId =>
+      this.songSubmissions[songSubmissionId],
+    getSongSubmissionsByUserId: userId => {
+      return this.songSubmissions.filter(
+        submission => submission.submittedById === userId
+      );
+    }
+  };
+
+  findIdentityByEmail(email) {
+    return Object.values(this.identities).find(
+      identity => identity.type === "email" && identity.email === email
+    );
+  }
+
+  getNextIdFor(hash) {
+    return String(Math.max(...Object.keys(hash || {}), 0) + 1);
+  }
+
+  getBasicIdentity(identityId) {
+    return (
+      this.identities[identityId] && this.identities[identityId].basicDisplay()
+    );
+  }
+
+  getDetailedIdentity(identityId) {
+    return (
+      this.identities[identityId] &&
+      this.identities[identityId].extendedDisplay(this.GETTERS)
+    );
+  }
+
+  getNextIdentityId() {
+    return this.getNextIdFor(this.identities);
+  }
+
+  getBasicProfile(profileId) {
+    return this.profiles[profileId] && this.profiles[profileId].basicDisplay();
+  }
+
+  getDetailedProfile(profileId) {
+    return (
+      this.profiles[profileId] &&
+      this.profiles[profileId].extendedDisplay(this.GETTERS)
+    );
+  }
+
+  getNextProfileId() {
+    return this.getNextIdFor(this.profiles);
+  }
+
+  getBasicGroup(groupId) {
+    return this.groups[groupId] && this.groups[groupId].basicDisplay();
+  }
+
+  getDetailedGroup(groupId) {
+    return (
+      this.groups[groupId] && this.groups[groupId].extendedDisplay(this.GETTERS)
+    );
+  }
+
+  getNextGroupId() {
+    return this.getNextGroupId(this.groups);
+  }
+
+  getBasicRound(roundId) {
+    return this.rounds[roundId] && this.rounds[roundId].basicDisplay();
+  }
+
+  getDetailedRound(roundId) {
+    return (
+      this.rounds[roundId] && this.rounds[roundId].extendedDisplay(this.GETTERS)
+    );
+  }
+
+  getNextSongSubmissionId() {
+    return this.getNextIdFor(this.songSubmissions);
+  }
+
+  getBasicSongSubmission(songSubmissionId) {
+    return (
+      this.songSubmissions[songSubmissionId] &&
+      this.songSubmissions[songSubmissionId].basicDisplay()
+    );
+  }
+
+  getDetailedSongSubmission(songSubmissionId) {
+    return (
+      this.songSubmissions[songSubmissionId] &&
+      this.songSubmissions[songSubmissionId].extendedDisplay(this.GETTERS)
+    );
+  }
+}
 
 module.exports = {
   State,
-  StateUtils,
+  ReadState,
   Profile,
   Identity,
   Group,

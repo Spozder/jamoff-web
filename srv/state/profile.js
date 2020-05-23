@@ -1,4 +1,6 @@
-class Profile {
+const { ModelBase } = require("./model-base");
+
+class Profile extends ModelBase {
   constructor(
     userId,
     identities = [],
@@ -7,6 +9,7 @@ class Profile {
     ownerOfGroups = [],
     memberOfGroups = []
   ) {
+    super();
     if (!userId) {
       throw "Profile Requires a UserId";
     }
@@ -103,11 +106,34 @@ class Profile {
   }
 
   // Display methods
-  toBasicDisplayProfile() {
+  basicDisplay() {
     return {
       fullName: this.fullName,
       ownerOfCount: this.ownerOfGroups.length,
       memberSince: this.createdOn
+    };
+  }
+
+  extendedDisplay({
+    getIdentityById,
+    getGroupById,
+    getSongSubmissionsByUserId
+  }) {
+    return {
+      fullName: this.fullName,
+      ownerOf: this.ownerOfGroups
+        .map(getGroupById)
+        .map(group => group.basicDisplay()),
+      memberOf: this.memberOfGroups
+        .map(getGroupById)
+        .map(group => group.basicDisplay()),
+      memberSince: this.createdOn,
+      identities: this.identities
+        .map(getIdentityById)
+        .map(identity => identity.basicDisplay()),
+      songSubmissions: getSongSubmissionsByUserId(this.userId).map(submission =>
+        submission.basicDisplay()
+      )
     };
   }
 }

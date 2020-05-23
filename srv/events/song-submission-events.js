@@ -69,19 +69,19 @@ class SpotifySongReplacementSubmitted extends SongSubmissionEvent {
     if (!previousSubmission) {
       throw "User hadn't submitted a song for this round yet";
     }
-    return {
+    const newState = {
       ...state,
       rounds: {
         ...state.rounds,
         [this.data.roundId]: state.rounds[this.data.roundId]
           .removeSong(previousSubmission.submissionId)
           .addSong(this.data.submissionId)
-      },
-      songSubmissions: {
-        ...state.songSubmissions,
-        [this.data.songSubmissionId]: 
       }
     };
+    // What do? Mutation???
+    // TODO
+    delete newState.songSubmissions[this.data.submissionId];
+    return newState;
   }
 }
 

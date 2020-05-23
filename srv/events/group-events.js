@@ -1,5 +1,10 @@
 const Event = require("./event");
 const { Group } = require("../state");
+const {
+  EventValidationError,
+  ProfileNotFoundError,
+  GroupNotFoundError
+} = require("../errors");
 
 class GroupEvent extends Event {
   static TYPE = super.TYPE + ":GROUP";
@@ -10,11 +15,11 @@ class GroupCreated extends GroupEvent {
 
   apply(state) {
     if (!this.data.id) {
-      throw "No GroupId provided";
+      throw new EventValidationError("No GroupId provided");
     } else if (this.data.id in state.groups) {
-      throw "Duplicated group id";
+      throw new EventValidationError("Duplicated group id");
     } else if (!(this.data.ownerId in state.profiles)) {
-      throw "Invalid Group ownerId";
+      throw new ProfileNotFoundError("Invalid Group ownerId");
     }
     return {
       ...state,
@@ -42,11 +47,11 @@ class GroupUpdated extends GroupEvent {
 
   apply(state) {
     if (!this.data.id) {
-      throw "No ID Given";
+      throw new EventValidationError("No ID Given");
     } else if (!(this.data.id in state.groups)) {
-      throw "Group not found";
+      throw new GroupNotFoundError("Group not found");
     } else if (this.data.ownerId && !(this.data.ownerId in state.profiles)) {
-      throw "Invalid New Group Owner ID";
+      throw new ProfileNotFoundError("Invalid New Group Owner ID");
     }
     const updatedGroup = state.groups[this.data.id].updateGroup(
       this.data.name,
@@ -90,9 +95,9 @@ class GroupMemberAdded extends GroupEvent {
 
   apply(state) {
     if (!(this.data.userId in state.profiles)) {
-      throw "Invalid User Id";
+      throw new ProfileNotFoundError("Invalid User Id");
     } else if (!(this.data.groupId in state.groups)) {
-      throw "Invalid Group Id";
+      throw new GroupNotFoundError("Invalid Group Id");
     }
     return {
       ...state,
@@ -117,9 +122,9 @@ class GroupMemberRemoved extends GroupEvent {
 
   apply(state) {
     if (!(this.data.userId in state.profiles)) {
-      throw "Invalid User Id";
+      throw new ProfileNotFoundError("Invalid User Id");
     } else if (!(this.data.groupId in state.groups)) {
-      throw "Invalid Group Id";
+      throw new GroupNotFoundError("Invalid Group Id");
     }
     return {
       ...state,

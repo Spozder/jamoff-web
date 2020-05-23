@@ -1,4 +1,6 @@
-class Round {
+const { ModelBase } = require("./model-base");
+
+class Round extends ModelBase {
   constructor(
     roundId,
     groupId,
@@ -8,6 +10,7 @@ class Round {
     description,
     songList = []
   ) {
+    super();
     if (!roundId || !groupId || !startTimestamp || !endTimestamp) {
       throw "Missing required Round field(s)";
     }
@@ -58,21 +61,30 @@ class Round {
     );
   }
 
-  // Getters
-  getSubmittedUserIds(state) {
-    return this.songList.map(
-      submissionId => state.songSubmissions[submissionId].submittedByUserId
-    );
-  }
-
   // Display methods
-  toBasicDisplayRound() {
+  basicDisplay() {
     return {
-      started: this.startTimestamp,
+      roundId: this.roundId,
+      groupId: this.groupId,
+      starts: this.startTimestamp,
       ends: this.endTimestamp,
       theme: this.theme,
       description: this.description,
-      submissionCound: this.songList.length
+      submissionCount: this.songList.length
+    };
+  }
+
+  extendedDisplay({ getGroupById, getSongSubmissionById }) {
+    return {
+      roundId: this.roundId,
+      group: getGroupById(this.groupId).basicDisplay(),
+      starts: this.startTimestamp,
+      ends: this.endTimestamp,
+      theme: this.theme,
+      description: this.description,
+      submissions: this.songList
+        .map(getSongSubmissionById)
+        .map(ss => ss.basicDisplay())
     };
   }
 }

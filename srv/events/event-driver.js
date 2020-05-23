@@ -1,6 +1,6 @@
 const registry = require("./event-registry");
 const EventStream = require("./event-stream");
-const { State } = require("../state");
+const { State, ReadState } = require("../state");
 
 // Combines the Event Registry and Event Stream
 class EventDriver {
@@ -20,6 +20,19 @@ class EventDriver {
     );
   }
 
+  getReadState(callback) {
+    return this.getState((err, state) => {
+      if (err) {
+        return callback(err);
+      }
+      if (!state) {
+        console.error("Uh oh???? No state??");
+        return callback(new Error("No state???"), false);
+      }
+      return callback(err, new ReadState(state));
+    });
+  }
+
   eventFromRow(eventRow) {
     return new (this.lookupEventConstructor(eventRow.type))(
       eventRow.timestamp,
@@ -31,16 +44,19 @@ class EventDriver {
     return this.registry.lookup(type);
   }
 
+  // TODO: DB Locking during appendEventData
   appendEventData(type, data, callback) {
-    // TODO: Confirm timestamp created here
     const newEvent = new (this.lookupEventConstructor(type))(
       new Date(Date.now()),
       data
     );
     return this.getState((err, state) => {
+      if (err) {
+        return callback(err);
+      }
       return newEvent.validateEvent(state, err => {
         if (err) {
-          callback(err + ", event type: " + newEvent.getType());
+          return callback(err);
         } else {
           return this.eventStream.appendEvent(newEvent, callback);
         }
