@@ -103,6 +103,11 @@ passport.use(
   })
 );
 
+app.get(API_BASE + "/echo", (req, res) => {
+  console.log(req.query);
+  return res.sendStatus(200);
+});
+
 const { ensureAuthenticated } = require("./routes/middleware")(eventDriver);
 
 app.get(
@@ -164,6 +169,10 @@ app.get(API_BASE + "/identities", (req, res) => {
 app.use(API_BASE + "/users", require("./routes/users")(eventDriver));
 app.use(API_BASE + "/groups", require("./routes/groups")(eventDriver));
 app.use(API_BASE + "/rounds", require("./routes/rounds")(eventDriver));
+app.use(API_BASE + "/spotify", [
+  passport.authenticate(["bearer", "session"], { session: false }),
+  require("./routes/spotify")(eventDriver)
+]);
 app.use(API_BASE + "/me", [
   passport.authenticate(["bearer", "session"], { session: false }),
   ensureAuthenticated,

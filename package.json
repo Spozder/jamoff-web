@@ -34,6 +34,7 @@
     "pg": "^8.1.0",
     "pg-query-stream": "^3.0.8",
     "register-service-worker": "^1.5.2",
+    "spotify-web-api-node": "^4.0.0",
     "vue": "^2.6.11",
     "vue-flatpickr-component": "^8.1.1",
     "vue-lazyload": "^1.2.6",

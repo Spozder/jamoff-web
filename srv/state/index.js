@@ -1,5 +1,10 @@
 const { Profile } = require("./profile");
-const { Identity } = require("./identity");
+const {
+  Identity,
+  EmailIdentity,
+  SpotifyIdentity,
+  SpotifyFullIdentity
+} = require("./identity");
 const { Group } = require("./group");
 const { Round } = require("./round");
 const { SongSubmission, SpotifySubmission } = require("./song-submission");
@@ -137,6 +142,12 @@ class ReadState {
     return this.getNextIdFor(this.profiles);
   }
 
+  getFullSpotifyIdentity(profileId) {
+    return this.profiles[profileId].identities
+      .map(id => this.identities[id])
+      .find(identity => identity instanceof SpotifyFullIdentity);
+  }
+
   getBasicGroup(groupId) {
     return this.groups[groupId] && this.groups[groupId].basicDisplay();
   }
@@ -185,6 +196,9 @@ module.exports = {
   ReadState,
   Profile,
   Identity,
+  EmailIdentity,
+  SpotifyIdentity,
+  SpotifyFullIdentity,
   Group,
   Round,
   SongSubmission,

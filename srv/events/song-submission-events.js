@@ -86,7 +86,8 @@ class SpotifySongReplacementSubmitted extends SongSubmissionEvent {
 }
 
 const eventTypes = {
-  SpotifySongSubmitted
+  SpotifySongSubmitted,
+  SpotifySongReplacementSubmitted
 };
 
 const registerSongSubmissionEvents = eventRegistry => {

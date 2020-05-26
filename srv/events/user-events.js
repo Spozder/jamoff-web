@@ -1,5 +1,5 @@
 const Event = require("./event");
-const { Profile, Identity } = require("../state");
+const { Profile, EmailIdentity } = require("../state");
 
 class UserEvent extends Event {
   static TYPE = super.TYPE + ":USER";
@@ -46,12 +46,12 @@ class UserCreated extends UserEvent {
       },
       identities: {
         ...state.identities,
-        [this.data.identityId]: new Identity(
+        [this.data.identityId]: new EmailIdentity(
           this.data.identityId,
           this.data.userId,
+          this.timestamp,
           this.data.email,
-          this.data.passHash,
-          this.timestamp
+          this.data.passHash
         )
       }
     };

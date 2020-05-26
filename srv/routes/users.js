@@ -1,7 +1,7 @@
 const express = require("express");
 const router = express.Router();
 
-const { hashPassword } = require("./utils");
+const { hashPassword } = require("../utils");
 
 module.exports = eventDriver => {
   const { getsReadState, handleAppendEventError } = require("./middleware")(

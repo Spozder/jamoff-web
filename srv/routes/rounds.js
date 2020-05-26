@@ -1,5 +1,6 @@
 const express = require("express");
 const router = express.Router();
+const { getSpotifyApiForUser } = require("../spotify");
 
 module.exports = eventDriver => {
   const {
@@ -129,6 +130,7 @@ module.exports = eventDriver => {
 
   // Route requires authentication AND that user is member of group AND that round is active
   // TODO Restrict to one submission per round - include overwrite flag?
+  // This might not be useful? Songs HAVE to be synced from spotify
   router.post(
     "/:roundId/songs",
     [
@@ -164,6 +166,60 @@ module.exports = eventDriver => {
         return res
           .status(400)
           .send("Unknown submission type: ", req.body.submissionType);
+      }
+    }
+  );
+
+  router.get(
+    "/:roundId/spotify/sync",
+    [getsReadState, ensureAuthenticated, ensureMemberOfGroup],
+    (req, res) => {
+      // TODO: Is round spotify-backed?
+      const round = req.readState.rounds[req.params.roundId];
+      const group = req.readState.groups[round.groupId];
+      const ownerSpotifyIdentity = req.readState.getFullSpotifyIdentity(
+        group.ownerId
+      );
+      if (!ownerSpotifyIdentity) {
+        return res.status(400).send("Group owner doesn't have spotify setup");
+      } else {
+        return getSpotifyApiForUser(
+          group.ownerId,
+          ownerSpotifyIdentity.refreshToken,
+          (err, newRefreshToken, spotifyApi) => {
+            if (err) {
+              console.error("Spotify api error: ", err);
+              return res.sendStatus(500);
+            }
+            const continuation = () => {
+              return spotifyApi.getPlaylist(
+                group.playlistId,
+                {},
+                (err, data) => {
+                  if (err) {
+                    console.error("Spotify api error: ", err);
+                    return res.sendStatus(500);
+                  }
+                  return res.send(data.body);
+                }
+              );
+            };
+            if (newRefreshToken) {
+              return eventDriver.appendEventData(
+                "EVENT:SPOTIFY:SPOTIFY_REFRESH_TOKEN_UPDATED",
+                {
+                  identityId: ownerSpotifyIdentity.identityId,
+                  newRefreshToken: newRefreshToken
+                },
+                err => {
+                  return handleAppendEventError(err, res, continuation);
+                }
+              );
+            } else {
+              return continuation();
+            }
+          }
+        );
       }
     }
   );

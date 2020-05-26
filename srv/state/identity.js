@@ -1,27 +1,38 @@
 const { ModelBase } = require("./model-base");
+const { EventValidationError } = require("../errors");
 
 class Identity extends ModelBase {
-  constructor(identityId, userId, email, passHash, createdOn, type = "email") {
+  constructor(identityId, userId, createdOn, type) {
     super();
-    if (!identityId || !userId || !email || !passHash || !createdOn) {
-      throw "All Identity fields are required";
+    if (!identityId || !userId || !createdOn) {
+      throw new EventValidationError("All Identity fields are required");
     }
     this.identityId = identityId;
     this.userId = userId;
-    this.email = email;
-    this.passHash = passHash;
     this.createdOn = createdOn;
     this.type = type;
   }
+}
+
+class EmailIdentity extends Identity {
+  constructor(identityId, userId, createdOn, email, passHash) {
+    super(identityId, userId, createdOn, "email");
+    if (!email || !passHash) {
+      throw new EventValidationError(
+        "Email and Password Hash fields are required"
+      );
+    }
+    this.email = email;
+    this.passHash = passHash;
+  }
 
   updateIdentity(email, passHash) {
-    return new Identity(
+    return new EmailIdentity(
       this.identityId,
       this.userId,
-      email || this.email,
-      passHash || this.passHash,
       this.createdOn,
-      this.type
+      email || this.email,
+      passHash || this.passHash
     );
   }
 
@@ -45,4 +56,49 @@ class Identity extends ModelBase {
   }
 }
 
-module.exports = { Identity };
+// Only contains a spotify username
+class SpotifyIdentity extends Identity {
+  constructor(identityId, userId, createdOn, spotifyUserId) {
+    super(identityId, userId, createdOn, "spotify");
+    if (!spotifyUserId) {
+      throw new EventValidationError("Missing required spotifyUserId");
+    }
+    this.spotifyUserId = spotifyUserId;
+  }
+
+  changeSpotifyUserId(newSpotifyUserId) {
+    return new SpotifyIdentity(
+      this.identityId,
+      this.userId,
+      this.createdOn,
+      newSpotifyUserId
+    );
+  }
+}
+
+// Actually contains a spotify integration
+class SpotifyFullIdentity extends SpotifyIdentity {
+  constructor(identityId, userId, createdOn, spotifyUserId, refreshToken) {
+    super(identityId, userId, createdOn, spotifyUserId);
+    if (!refreshToken) {
+      throw new EventValidationError("Refresh token required");
+    }
+    this.refreshToken = refreshToken;
+  }
+
+  updateRefreshToken(newRefreshToken) {
+    return new SpotifyFullIdentity(
+      this.identityId,
+      this.userId,
+      this.createdOn,
+      newRefreshToken
+    );
+  }
+}
+
+module.exports = {
+  Identity,
+  EmailIdentity,
+  SpotifyIdentity,
+  SpotifyFullIdentity
+};

@@ -1,4 +1,5 @@
 const { ModelBase } = require("./model-base");
+const { EventValidationError } = require("../errors");
 
 class Profile extends ModelBase {
   constructor(
@@ -11,11 +12,11 @@ class Profile extends ModelBase {
   ) {
     super();
     if (!userId) {
-      throw "Profile Requires a UserId";
+      throw new EventValidationError("Profile Requires a UserId");
     }
     this.userId = userId;
     if (identities.length === 0) {
-      throw "PROFILE MUST HAVE >= 1 IDENTITY";
+      throw new EventValidationError("PROFILE MUST HAVE >= 1 IDENTITY");
     }
     this.identities = identities;
     this.createdOn = createdOn;
@@ -31,17 +32,44 @@ class Profile extends ModelBase {
       this.userId,
       identities || this.identities,
       this.createdOn,
-      fullName || this.fullName
+      fullName || this.fullName,
+      this.ownerOfGroups,
+      this.memberOfGroups
+    );
+  }
+
+  addIdentity(identityId) {
+    return new Profile(
+      this.userId,
+      [...this.identities, identityId],
+      this.createdOn,
+      this.fullName,
+      this.ownerOfGroups,
+      this.memberOfGroups
+    );
+  }
+
+  removeIdentity(identityId) {
+    if (!this.identities.includes(identityId)) {
+      throw new EventValidationError("Identity not found");
+    }
+    return new Profile(
+      this.userId,
+      this.identities.filter(id => id !== identityId),
+      this.createdOn,
+      this.fullName,
+      this.ownerOfGroups,
+      this.memberOfGroups
     );
   }
 
   // NOTE: Adds group membership as well
   addGroupOwnership(groupId) {
     if (!groupId) {
-      throw "Group ID cannot be empty";
+      throw new EventValidationError("Group ID cannot be empty");
     }
     if (this.ownerOfGroups.includes(groupId)) {
-      throw "Already owner of group";
+      throw new EventValidationError("Already owner of group");
     }
     return new Profile(
       this.userId,
@@ -56,10 +84,12 @@ class Profile extends ModelBase {
   // NOTE: Removes group membership as well
   removeGroupOwnership(groupId) {
     if (!groupId) {
-      throw "Group ID cannot be empty";
+      throw new EventValidationError("Group ID cannot be empty");
     }
     if (!this.ownerOfGroups.includes(groupId)) {
-      throw "Cannot remove group ownership of non-owned group";
+      throw new EventValidationError(
+        "Cannot remove group ownership of non-owned group"
+      );
     }
     return new Profile(
       this.userId,
@@ -73,10 +103,10 @@ class Profile extends ModelBase {
 
   addGroupMembership(groupId) {
     if (!groupId) {
-      throw "Group ID cannot be empty";
+      throw new EventValidationError("Group ID cannot be empty");
     }
     if (this.memberOfGroups.includes(groupId)) {
-      throw "Already a member of group";
+      throw new EventValidationError("Already a member of group");
     }
     return new Profile(
       this.userId,
@@ -90,10 +120,12 @@ class Profile extends ModelBase {
 
   removeGroupMembership(groupId) {
     if (!groupId) {
-      throw "Group ID cannot be empty";
+      throw new EventValidationError("Group ID cannot be empty");
     }
     if (!this.memberOfGroups.includes(groupId)) {
-      throw "Cannot remove group membership of group no a member of";
+      throw new EventValidationError(
+        "Cannot remove group membership of group not a member of"
+      );
     }
     return new Profile(
       this.userId,

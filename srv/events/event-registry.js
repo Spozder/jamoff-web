@@ -2,12 +2,14 @@ const { registerUserEvents } = require("./user-events");
 const { registerGroupEvents } = require("./group-events");
 const { registerRoundEvents } = require("./round-events");
 const { registerSongSubmissionEvents } = require("./song-submission-events");
+const { registerSpotifyEvents } = require("./spotify-events");
 
 const registerFunctions = [
   registerUserEvents,
   registerGroupEvents,
   registerRoundEvents,
-  registerSongSubmissionEvents
+  registerSongSubmissionEvents,
+  registerSpotifyEvents
 ];
 
 class EventRegistry {

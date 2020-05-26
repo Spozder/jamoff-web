@@ -144,11 +144,33 @@ class GroupMemberRemoved extends GroupEvent {
   }
 }
 
+class GroupPlaylistAssociated extends GroupEvent {
+  static TYPE = super.TYPE + ":GROUP_PLAYLIST_ASSOCIATED";
+
+  apply(state) {
+    if (!(this.data.groupId in state.groups)) {
+      throw new GroupNotFoundError("Group not found");
+    } else if (!this.data.playlistId) {
+      throw new EventValidationError("Playlist ID not included");
+    }
+    return {
+      ...state,
+      groups: {
+        ...state.groups,
+        [this.data.groupId]: state.groups[this.data.groupId].setPlaylist(
+          this.data.playlistId
+        )
+      }
+    };
+  }
+}
+
 const eventTypes = {
   GroupCreated,
   GroupUpdated,
   GroupMemberAdded,
-  GroupMemberRemoved
+  GroupMemberRemoved,
+  GroupPlaylistAssociated
 };
 
 const registerGroupEvents = eventRegistry => {

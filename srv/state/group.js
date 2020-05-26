@@ -8,7 +8,8 @@ class Group extends ModelBase {
     description,
     memberIds = [ownerId],
     roundIds = [],
-    activeRoundId
+    activeRoundId,
+    playlistId
   ) {
     super();
     if (!groupId || !name || !ownerId) {
@@ -25,6 +26,7 @@ class Group extends ModelBase {
     if (activeRoundId) {
       this.activeRoundId = activeRoundId;
     }
+    this.playlistId = playlistId;
   }
 
   updateGroup(name, ownerId, description) {
@@ -35,7 +37,8 @@ class Group extends ModelBase {
       description || this.description,
       this.memberIds,
       this.roundIds,
-      this.activeRoundId
+      this.activeRoundId,
+      this.playlistId
     );
   }
 
@@ -53,7 +56,8 @@ class Group extends ModelBase {
       this.description,
       [...this.memberIds, userId],
       this.roundIds,
-      this.activeRoundId
+      this.activeRoundId,
+      this.playlistId
     );
   }
 
@@ -71,7 +75,8 @@ class Group extends ModelBase {
       this.description,
       this.memberIds.filter(memberId => memberId !== userId),
       this.roundIds,
-      this.activeRoundId
+      this.activeRoundId,
+      this.playlistId
     );
   }
 
@@ -88,7 +93,8 @@ class Group extends ModelBase {
       this.description,
       this.memberIds,
       [...this.roundIds, roundId],
-      this.activeRoundId
+      this.activeRoundId,
+      this.playlistId
     );
   }
 
@@ -105,7 +111,8 @@ class Group extends ModelBase {
       this.description,
       this.memberIds,
       this.roundIds.filter(groupRoundId => groupRoundId !== roundId),
-      this.activeRoundId
+      this.activeRoundId,
+      this.playlistId
     );
   }
 
@@ -122,7 +129,8 @@ class Group extends ModelBase {
       this.description,
       this.memberIds,
       this.roundIds,
-      roundId
+      roundId,
+      this.playlistId
     );
   }
 
@@ -137,7 +145,21 @@ class Group extends ModelBase {
       this.description,
       this.memberIds,
       this.roundIds,
-      undefined
+      undefined,
+      this.playlistId
+    );
+  }
+
+  setPlaylist(playlistId) {
+    return new Group(
+      this.groupId,
+      this.name,
+      this.ownerId,
+      this.description,
+      this.memberIds,
+      this.roundIds,
+      this.activeRoundId,
+      playlistId
     );
   }
 
@@ -164,7 +186,8 @@ class Group extends ModelBase {
       rounds: this.roundIds
         .map(getRoundById)
         .map(round => round.basicDisplay()),
-      activeRound: getRoundById(this.activeRoundId)
+      activeRound: getRoundById(this.activeRoundId),
+      playlistId: this.playlistId
     };
   }
 }

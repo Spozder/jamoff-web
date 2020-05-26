@@ -3,7 +3,7 @@ const {
   UserCreated,
   UserUpdated
 } = require("../../../../srv/events/user-events");
-const { State, Profile, Identity } = require("../../../../srv/state");
+const { State, Profile, EmailIdentity } = require("../../../../srv/state");
 
 describe("User Events", () => {
   const startState = State.INIT;
@@ -22,12 +22,12 @@ describe("User Events", () => {
     timestamp,
     user1Data.fullName
   );
-  const user1Identity = new Identity(
+  const user1Identity = new EmailIdentity(
     user1Data.identityId,
     user1Data.userId,
+    timestamp,
     user1Data.email,
-    user1Data.passHash,
-    timestamp
+    user1Data.passHash
   );
   const user2Data = {
     userId: "2",
@@ -42,12 +42,12 @@ describe("User Events", () => {
     timestamp2,
     user2Data.fullName
   );
-  const user2Identity = new Identity(
+  const user2Identity = new EmailIdentity(
     user2Data.identityId,
     user2Data.userId,
+    timestamp2,
     user2Data.email,
-    user2Data.passHash,
-    timestamp2
+    user2Data.passHash
   );
   describe("UserCreated", () => {
     it("Applies correctly for a new user", () => {
