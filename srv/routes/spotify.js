@@ -10,21 +10,18 @@ module.exports = eventDriver => {
   const {
     getsReadState,
     ensureAuthenticated,
-    handleAppendEventError
+    handleAppendEventError,
+    getsUserSpotifyApi
   } = require("./middleware")(eventDriver);
 
-  router.get("/test", (req, res) => {
-    return backendSpotify.getArtistTopTracks(
-      "19lQ2rJLlP71FOKESiMNJT",
-      "US",
-      (err, spotifyResp) => {
-        if (err) {
-          console.error(err);
-          return res.sendStatus(500);
-        }
-        return res.send(spotifyResp.body.tracks.map(track => track.name));
+  router.get("/test", getsReadState, getsUserSpotifyApi, (req, res) => {
+    return req.spotifyApi.getMe((err, data) => {
+      if (err) {
+        console.error("Getting Spotify ME failed:", err);
+        return res.sendStatus(500);
       }
-    );
+      return res.send(data.body);
+    });
   });
 
   const states = {};

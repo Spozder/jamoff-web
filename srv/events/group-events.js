@@ -165,12 +165,30 @@ class GroupPlaylistAssociated extends GroupEvent {
   }
 }
 
+class GroupPlaylistDisassociated extends GroupEvent {
+  static TYPE = super.TYPE + ":GROUP_PLAYLIST_DISASSOCIATED";
+
+  apply(state) {
+    if (!(this.data.groupId in state.groups)) {
+      throw new GroupNotFoundError("Group not found");
+    }
+    return {
+      ...state,
+      groups: {
+        ...state.groups,
+        [this.data.groupId]: state.groups[this.data.groupId].removePlaylist()
+      }
+    };
+  }
+}
+
 const eventTypes = {
   GroupCreated,
   GroupUpdated,
   GroupMemberAdded,
   GroupMemberRemoved,
-  GroupPlaylistAssociated
+  GroupPlaylistAssociated,
+  GroupPlaylistDisassociated
 };
 
 const registerGroupEvents = eventRegistry => {

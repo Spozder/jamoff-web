@@ -84,8 +84,19 @@ class SpotifyFullIdentityAdded extends SpotifyEvent {
     if (!this.data.identityId) {
       throw new EventValidationError("New Identity Id Required");
     }
+    const profile = state.profiles[this.data.userId];
+    const identities = profile.identities.map(id => state.identities[id]);
+    if (identities.find(identity => identity.type === "spotify")) {
+      throw new IdentityAlreadyExistsError(
+        "User already has a spotify UserId setup"
+      );
+    }
     return {
       ...state,
+      profiles: {
+        ...state.profiles,
+        [this.data.userId]: profile.addIdentity(this.data.identityId)
+      },
       identities: {
         ...state.identities,
         [this.data.identityId]: new SpotifyFullIdentity(

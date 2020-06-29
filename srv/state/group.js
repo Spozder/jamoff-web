@@ -163,6 +163,19 @@ class Group extends ModelBase {
     );
   }
 
+  removePlaylist() {
+    return new Group(
+      this.groupId,
+      this.name,
+      this.ownerId,
+      this.description,
+      this.memberIds,
+      this.roundIds,
+      this.activeRoundId,
+      null
+    );
+  }
+
   // Display methods
   basicDisplay() {
     return {

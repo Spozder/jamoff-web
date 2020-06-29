@@ -6,22 +6,10 @@ module.exports = eventDriver => {
   const {
     getsReadState,
     handleAppendEventError,
-    ensureAuthenticated
+    ensureAuthenticated,
+    ensureMemberOfGroup,
+    getsUserSpotifyApi
   } = require("./middleware")(eventDriver);
-
-  // Requires previous getsReadState middleware
-  // Requires :roundId param
-  const ensureMemberOfGroup = (req, res, next) => {
-    const state = req.readState;
-    if (
-      !state.groups[
-        state.rounds[req.params.roundId].groupId
-      ].memberIds.includes(req.user.userId)
-    ) {
-      return res.sendStatus(403);
-    }
-    return next();
-  };
 
   // Requires previous getsReadState middleware
   // Requires :roundId param
@@ -177,50 +165,16 @@ module.exports = eventDriver => {
       // TODO: Is round spotify-backed?
       const round = req.readState.rounds[req.params.roundId];
       const group = req.readState.groups[round.groupId];
-      const ownerSpotifyIdentity = req.readState.getFullSpotifyIdentity(
-        group.ownerId
-      );
-      if (!ownerSpotifyIdentity) {
-        return res.status(400).send("Group owner doesn't have spotify setup");
-      } else {
-        return getSpotifyApiForUser(
-          group.ownerId,
-          ownerSpotifyIdentity.refreshToken,
-          (err, newRefreshToken, spotifyApi) => {
-            if (err) {
-              console.error("Spotify api error: ", err);
-              return res.sendStatus(500);
-            }
-            const continuation = () => {
-              return spotifyApi.getPlaylist(
-                group.playlistId,
-                {},
-                (err, data) => {
-                  if (err) {
-                    console.error("Spotify api error: ", err);
-                    return res.sendStatus(500);
-                  }
-                  return res.send(data.body);
-                }
-              );
-            };
-            if (newRefreshToken) {
-              return eventDriver.appendEventData(
-                "EVENT:SPOTIFY:SPOTIFY_REFRESH_TOKEN_UPDATED",
-                {
-                  identityId: ownerSpotifyIdentity.identityId,
-                  newRefreshToken: newRefreshToken
-                },
-                err => {
-                  return handleAppendEventError(err, res, continuation);
-                }
-              );
-            } else {
-              return continuation();
-            }
+      req.spotifyUserId = group.ownerId;
+      return getsUserSpotifyApi(req, res, () => {
+        return req.spotifyApi.getPlaylist(group.playlistId, {}, (err, data) => {
+          if (err) {
+            console.error("GetPlaylist error: ", err);
+            return res.sendStatus(500);
           }
-        );
-      }
+          return res.send(data.body);
+        });
+      });
     }
   );
 

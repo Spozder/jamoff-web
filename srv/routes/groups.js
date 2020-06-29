@@ -2,9 +2,14 @@ const express = require("express");
 const router = express.Router();
 
 module.exports = eventDriver => {
-  const { getsReadState, handleAppendEventError } = require("./middleware")(
-    eventDriver
-  );
+  const {
+    getsReadState,
+    handleAppendEventError,
+    ensureAuthenticated,
+    ensureMemberOfGroup,
+    ensureOwnerOfGroup,
+    getsUserSpotifyApi
+  } = require("./middleware")(eventDriver);
 
   router.get("/", getsReadState, (req, res) => {
     return res.send(req.readState.groups);
@@ -108,5 +113,32 @@ module.exports = eventDriver => {
       }
     );
   });
+
+  router.get(
+    "/:groupId/spotifyPlaylist",
+    [getsReadState, ensureAuthenticated, ensureMemberOfGroup],
+    (req, res) => {
+      const group = req.readState.getDetailedGroup(req.params.groupId);
+      if (!group.playlistId) {
+        return res.status(400).send("Group has no associated Spotify Playlist");
+      }
+      req.spotifyUserId = group.ownerId;
+      return getsUserSpotifyApi(req, res, () => {
+        return req.spotifyApi.getPlaylist(group.playlistId, {}, (err, data) => {
+          if (err) {
+            console.error("Error getting playlist from Spotify:", err);
+          }
+          return res.send(data.body);
+        });
+      });
+    }
+  );
+
+  router.use("/:groupId/config", [
+    getsReadState,
+    ensureAuthenticated,
+    ensureOwnerOfGroup,
+    require("./group-config")(eventDriver)
+  ]);
   return router;
 };

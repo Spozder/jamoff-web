@@ -5,6 +5,7 @@
   "scripts": {
     "serve": "vue-cli-service serve",
     "build": "vue-cli-service build",
+    "build:watch": "vue-cli-service build --watch",
     "test:src:unit": "vue-cli-service test:unit",
     "lint": "vue-cli-service lint",
     "test:srv:unit": "./node_modules/.bin/mocha \"tests/srv/unit/**/*.spec.js\" || echo"

@@ -91,6 +91,12 @@ npm run serve
 npm run build
 ```
 
+To watch for changes:
+
+```
+npm run build:watch
+```
+
 ### Run front-end unit tests
 
 ```
