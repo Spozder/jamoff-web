@@ -9,10 +9,12 @@ const API_BASE = "http://localhost:3000/api";
 
 // Muation names
 const AUTH_CONFIRMED = "AUTHORIZATION_CONFIRMED";
+const LOGGED_OUT = "LOGGED_OUT";
 const UPDATE_PROFILE_PAGE_DATA = "UPDATE_PROFILE_PAGE_DATA";
 
 // Action names
 const CHECK_AUTH = "CHECK__AUTHORIZATION";
+const LOGOUT = "LOGOUT";
 const GET_PROFILE_BY_ID = "GET_PROFILE_BY_ID";
 const GET_MY_PROFILE = "GET_MY_PROFILE";
 
@@ -20,9 +22,15 @@ const store = new Vuex.Store({
   state: {
     isAuthenticated: false,
     userId: "",
-    profilePageData: {}
+    profilePageData: {
+      memberOf: []
+    }
   },
   mutations: {
+    [LOGGED_OUT]: state => {
+      state.isAuthenticated = false;
+      state.userId = null;
+    },
     [AUTH_CONFIRMED]: (state, id) => {
       state.isAuthenticated = true;
       state.userId = String(id);
@@ -41,6 +49,10 @@ const store = new Vuex.Store({
         }
       }
     },
+    [LOGOUT]: async ({ commit }) => {
+      await axios.get(`${API_BASE}/logout`);
+      commit(LOGGED_OUT);
+    },
     [GET_PROFILE_BY_ID]: ({ commit }, id) => {
       axios
         .get(`${API_BASE}/profiles/${id}`)
@@ -54,12 +66,14 @@ const store = new Vuex.Store({
   },
   modules: {},
   getters: {
-    isAuthenticated: state => state.isAuthenticated
+    isAuthenticated: state => state.isAuthenticated,
+    userId: state => state.userId
   }
 });
 
 export {
   store,
+  LOGOUT,
   CHECK_AUTH,
   GET_PROFILE_BY_ID,
   GET_MY_PROFILE,

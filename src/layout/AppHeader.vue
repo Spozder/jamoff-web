@@ -62,8 +62,8 @@
           >
           <base-button
             v-if="isAuthenticated"
-            tag="a"
-            href="/logout"
+            tag="router-link"
+            to="/logout"
             class="mb-3 mb-sm-0"
             type="neutral"
             icon="ni ni-single-02 mr-2"

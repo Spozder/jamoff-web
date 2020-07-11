@@ -183,7 +183,7 @@ class Group extends ModelBase {
       name: this.name,
       description: this.description,
       memberCount: this.memberIds.length,
-      roundcount: this.roundIds.length
+      roundCount: this.roundIds.length
     };
   }
 

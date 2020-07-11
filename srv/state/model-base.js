@@ -2,6 +2,7 @@ class ModelBase {
   // _ -> JSON
   // Simple JSON representation of this model object
   basicDisplay() {
+    console.error("Model:", this);
     throw "This model doesn't have a basic display fn!";
   }
 

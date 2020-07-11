@@ -145,11 +145,6 @@ app.post(
   }
 );
 
-app.get("/logout", (req, res) => {
-  req.logout();
-  res.redirect("/?logout=true");
-});
-
 app.get(API_BASE + "/logout", (req, res) => {
   req.logout();
   res.send({ message: "Logout successful" });

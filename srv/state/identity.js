@@ -74,6 +74,24 @@ class SpotifyIdentity extends Identity {
       newSpotifyUserId
     );
   }
+
+  basicDisplay() {
+    return {
+      identityId: this.identityId,
+      userId: this.userId,
+      spotifyUserId: this.spotifyUserId,
+      createdOn: this.createdOn
+    };
+  }
+
+  extendedDisplay() {
+    return {
+      identityId: this.identityId,
+      userId: this.userId,
+      spotifyUserId: this.spotifyUserId,
+      createdOn: this.createdOn
+    };
+  }
 }
 
 // Actually contains a spotify integration

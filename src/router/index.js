@@ -6,7 +6,8 @@ import Home from "../views/Home.vue";
 import Login from "../views/Login.vue";
 import Register from "../views/Register.vue";
 import Profile from "../views/Profile.vue";
-import { store, CHECK_AUTH } from "../store";
+import MyProfile from "../views/MyProfile.vue";
+import { store, CHECK_AUTH, LOGOUT } from "../store";
 
 Vue.use(VueRouter);
 
@@ -23,6 +24,12 @@ const authGuard = async (to, from, next) => {
     console.log("Still not authorized after check");
     return next("/?failure=true");
   }
+};
+
+const logout = async (to, from, next) => {
+  console.log("Logging out!");
+  await store.dispatch(LOGOUT);
+  return next("/?logout=true");
 };
 
 const routes = [
@@ -45,6 +52,11 @@ const routes = [
     }
   },
   {
+    path: "/logout",
+    name: "logout",
+    beforeEnter: logout
+  },
+  {
     path: "/register",
     name: "register",
     components: {
@@ -58,7 +70,7 @@ const routes = [
     name: "my profile",
     components: {
       header: Header,
-      default: Profile,
+      default: MyProfile,
       footer: Footer
     },
     beforeEnter: authGuard

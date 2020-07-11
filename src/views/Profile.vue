@@ -41,13 +41,9 @@
               <div class="col-lg-4 order-lg-1">
                 <div class="card-profile-stats d-flex justify-content-center">
                   <div>
-                    <span class="heading">{{
-                      profile.memberOfGroups.length
-                    }}</span>
+                    <span class="heading">{{ profile.memberOf.length }}</span>
                     <span class="description"
-                      >Group{{
-                        profile.memberOfGroups.length > 1 ? "s" : ""
-                      }}</span
+                      >Group{{ profile.memberOf.length > 1 ? "s" : "" }}</span
                     >
                   </div>
                   <div>
@@ -69,14 +65,13 @@
             <div class="mt-5 py-5 border-top text-center">
               <div class="row justify-content-center">
                 <div class="col-lg-9">
-                  <p>
-                    An artist of considerable range, Ryan — the name taken by
-                    Melbourne-raised, Brooklyn-based Nick Murphy — writes,
-                    performs and records all of his own music, giving it a warm,
-                    intimate feel with a solid groove structure. An artist of
-                    considerable range.
-                  </p>
-                  <a href="#">Show more</a>
+                  <div class="card-deck">
+                    <GroupCard
+                      v-for="group in profile.memberOf"
+                      :key="group.groupId"
+                      :group="group"
+                    />
+                  </div>
                 </div>
               </div>
             </div>
@@ -88,7 +83,9 @@
 </template>
 <script>
 import { GET_PROFILE_BY_ID } from "../store";
+import GroupCard from "../components/domain/GroupCard.vue";
 export default {
+  components: { GroupCard },
   props: {
     id: String
   },
